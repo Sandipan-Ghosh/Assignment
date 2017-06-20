@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+	
+  <head>
+  </head>
+	
+  <body>
+    <!-- Inline SVG -->
+    <svg width="400" height="400">
+      <!-- Definition of marker -->
+      <defs>
+        <marker id="knob"
+				  viewBox="0 0 10 5	" refX="0" refY="2.5" 
+				  markerUnits="strokeWidth"
+				  markerWidth="4" markerHeight="3"
+				  orient="auto">
+				  <path d="M -5 0 L 5 0 L 5 5 L 0 5" />
+        </marker>
+      </defs>
+      <!-- Path that will have knobs at both ends -->
+      <path d="M 50,100 Q 150,50 250,100" stroke="hotpink" 
+				stroke-width="10" fill="white" 
+				marker-start="url(#knob)"
+				marker-end="url(#knob)" /> 
+    </svg>
+  </body>
+</html>
+	

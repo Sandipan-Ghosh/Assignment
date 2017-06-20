@@ -1,0 +1,21 @@
+<body ng-app="app">
+ <div ng-controller="MyController1">
+  <input type="button" value="Broadcast Down" 
+         ng-click="OnClick($event)" />
+  <h4>{{Message}}</h4>
+   <div ng-controller="MyController2">
+    <h4>{{Message}}</h4>
+    <div ng-controller="MyController3">
+     <h4>{{Message}}</h4>
+     <input type="button" value="Emit Up" 
+            ng-click="OnClick($event)" />
+    </div>
+   </div>
+   <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-route/angular-route.js"></script>
+  <script src="app.js"></script>
+  <script src="controllers/MyController1.js"></script>
+   <script src="controllers/MyController2.js"></script>
+    <script src="controllers/MyController3.js"></script>
+  </div>
+</body>
