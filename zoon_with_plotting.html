@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Zoom + Pan</title>
+<style>
+
+svg {
+  font: 10px sans-serif;
+  shape-rendering: crispEdges;
+}
+
+rect {
+  fill: #ddd;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+}
+
+button {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+}
+
+</style>
+<body>
+	<button>Reset</button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.js"></script>
+<script>
+var lineData = [{
+			x: 1,
+			y: 5
+		}	, {
+			x: 20,
+			y: 20
+		}, {
+			x: 40,
+			y: 10
+		}, {
+			x: 60,
+			y: 40
+		}, {
+			x: 80,
+			y:5
+		}, {
+			x: 100,
+			y: 60
+		}];
+	  
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x = d3.scale.linear()
+    .domain([-width / 2, width / 2])
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .domain([-height / 2, height / 2])
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .tickSize(-height);
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(5)
+    .tickSize(-width);
+
+var zoom = d3.behavior.zoom()
+    .x(x)
+    .y(y)
+    .scaleExtent([1, 32])
+    .on("zoom", zoomed);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width )
+    .attr("height", height )
+  .append("g")
+    
+    .call(zoom);
+
+svg.append("rect")
+    .attr("width", width)
+    .attr("height", height)
+	 .style("pointer-events", "all");
+
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height/2 + ")")
+    .call(xAxis);
+d3.select(".x").select("path").attr("d","M0,0L900,0").attr("style","stroke:black");
+svg.append("g")
+    .attr("class", "y axis")
+	.attr('transform', 'translate(0' + width/2 + ',0)')    
+	.call(yAxis);
+d3.select(".y").select("path").attr("d","M0,450L0,0").attr("style","stroke:black");
+var lineFunc = d3.svg.line()
+  .x(function(d) {
+    return x(d.x);
+  })
+  .y(function(d) {
+    return y(d.y);
+  })
+  .interpolate('cardinal');
+  svg.append('svg:path')
+  .attr('d', lineFunc(lineData))
+  .attr('stroke', 'blue')
+  .attr('stroke-width', 2).attr("class","curve")
+  .attr('fill', 'none');
+	
+d3.select("button").on("click", reset);
+function zoomed() {
+  svg.select(".x.axis").call(xAxis);
+  d3.select(".x").select("path").attr("d","M0,0L900,0").attr("style","stroke:black");
+  svg.select(".y.axis").call(yAxis);
+  d3.select(".y").select("path").attr("d","M0,450L0,0").attr("style","stroke:black");
+  d3.select(".curve").attr('d', lineFunc(lineData));
+}
+function reset() {
+  d3.transition().duration(750).tween("zoom", function() {
+    var ix = d3.interpolate(x.domain(), [-width / 2, width / 2]),
+        iy = d3.interpolate(y.domain(), [-height / 2, height / 2]);
+    return function(t) {
+      zoom.x(x.domain(ix(t))).y(y.domain(iy(t)));
+      zoomed();
+    };
+  });
+}
+
+</script>
+</body>
