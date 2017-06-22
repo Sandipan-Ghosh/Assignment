@@ -27,37 +27,54 @@ button {
 <body>
 	<button>Reset</button>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.js"></script>
+	<script src ="C:\Users\sandipan\Desktop\nerdamer.core.js" ></script>
+	<script src="C:\Users\sandipan\Desktop\Algebra.js"></script>
+	<script src="C:\Users\sandipan\Desktop\Calculus.js"></script>
+	<script src ="C:\Users\sandipan\Desktop\Solve.js"></script>	
+	<link rel="stylesheet" href="C:\Users\sandipan\Desktop\mathquill.css"/>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="C:\Users\sandipan\Desktop\mathquill.js"></script>
+	<p><span id="answer" >x=</span></p>
 <script>
-var lineData = [{
-			x: 1,
-			y: 5
-		}	, {
-			x: 20,
-			y: 20
-		}, {
-			x: 40,
-			y: 10
-		}, {
-			x: 60,
-			y: 40
-		}, {
-			x: 80,
-			y:5
-		}, {
-			x: 100,
-			y: 60
-		}];
-	  
+var enteredMath="sin(y)";
+var MQ = MathQuill.getInterface(2);
+  var answerSpan = document.getElementById('answer');
+  var answerMathField = MQ.MathField(answerSpan, {
+    handlers: {
+      edit: function() {
+        enteredMath = answerMathField.latex(); // Get entered math in LaTeX format
+        console.log(enteredMath);
+		plot();
+      }
+    }
+  });
+  
+  
+  function plot(){
+  
+  d3.select("svg").remove();
+var equation = enteredMath;
+	var points=[];
+	
+	for(var i=-10;i<=10;i++){
+		var val = nerdamer(equation,{x:i},['expand']);
+		var parse = val + "=0"
+		var yVal=nerdamer.solveEquations(parse, 'y');
+		if(yVal>0){
+			points.push({x:i,y:(yVal[0].multiplier.num.value)/(yVal[0].multiplier.den.value)});
+			}
+	}
+	console.log(points);
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
-    .domain([-width / 2, width / 2])
+    .domain([-10, 10])
     .range([0, width]);
 
 var y = d3.scale.linear()
-    .domain([-height / 2, height / 2])
+    .domain([-10, 10])
     .range([height, 0]);
 
 var xAxis = d3.svg.axis()
@@ -67,7 +84,6 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
-    .ticks(5)
     .tickSize(-width);
 
 var zoom = d3.behavior.zoom()
@@ -107,7 +123,7 @@ var lineFunc = d3.svg.line()
   })
   .interpolate('cardinal');
   svg.append('svg:path')
-  .attr('d', lineFunc(lineData))
+  .attr('d', lineFunc(points))
   .attr('stroke', 'blue')
   .attr('stroke-width', 2).attr("class","curve")
   .attr('fill', 'none');
@@ -118,18 +134,19 @@ function zoomed() {
   d3.select(".x").select("path").attr("d","M0,0L900,0").attr("style","stroke:black");
   svg.select(".y.axis").call(yAxis);
   d3.select(".y").select("path").attr("d","M0,450L0,0").attr("style","stroke:black");
-  d3.select(".curve").attr('d', lineFunc(lineData));
+  d3.select(".curve").attr('d', lineFunc(points));
 }
 function reset() {
   d3.transition().duration(750).tween("zoom", function() {
-    var ix = d3.interpolate(x.domain(), [-width / 2, width / 2]),
-        iy = d3.interpolate(y.domain(), [-height / 2, height / 2]);
+    var ix = d3.interpolate(x.domain(), [-10, 10]),
+        iy = d3.interpolate(y.domain(), [-10, 10]);
     return function(t) {
       zoom.x(x.domain(ix(t))).y(y.domain(iy(t)));
       zoomed();
     };
   });
 }
-
+}
+plot();
 </script>
 </body>
